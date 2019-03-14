@@ -1,5 +1,6 @@
 利用fabric + kubeadm 在Centos7 上快速搭建k8s 集群(单master)
 
+## 部署
 ```
 curl https://bootstrap.pypa.io/get-pip.py | python # 安装pip
 pip install fabric # 安装fabric
@@ -63,4 +64,41 @@ NAME     STATUS   ROLES    AGE    VERSION
 k8s-01   Ready    master   9m    v1.13.4
 k8s-02   Ready    <none>   5m    v1.13.4
 k8s-03   Ready    <none>   5m    v1.13.4
+```
+
+## 测试
+
+0. 创建deployment
+```
+kubectl create deployment hello-k8s --image=docker.io/yangbinnnn/hello-k8s:latest
+```
+
+1. 查看pods
+```
+# kubectl get pods
+NAME                         READY   STATUS    RESTARTS   AGE
+hello-k8s-5455d6b777-n24gd   1/1     Running   0          13m
+```
+
+2. 部署服务
+```
+kubectl expose deployment hello-k8s --type=LoadBalancer --port=8080
+```
+
+3. 查看服务
+```
+# kubectl get services
+NAME         TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+hello-k8s    LoadBalancer   10.109.181.185   <pending>     8080:31269/TCP   2m20s
+```
+
+4. 访问服务
+```
+# curl -i http://10.109.181.185:8080
+HTTP/1.1 200 OK
+Date: Thu, 14 Mar 2019 04:03:39 GMT
+Connection: keep-alive
+Transfer-Encoding: chunked
+
+Hello k8s!
 ```
